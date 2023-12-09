@@ -7,25 +7,32 @@ function emptyOrRows(rows) {
     return rows;
 }
 module.exports = {
-    getMultiple: async function (table, ...col) {
+    getMultiple: async function (table, ...columns) {
+        console.log('inside get multiple');
+        console.log(table);
         const rows = await query(
-            `SELECT Id, Name
+            `SELECT ${columns}
         FROM ${table}`
         );
+        console.log("data");
+
         const data = emptyOrRows(rows);
-
-        return {
-            data,
-        }
+        console.log(data);
+        return data;
     },
-    create: async function (User) {
-        const result = await query(
-            `INSERT INTO users 
-        (Id,Username,Password,location,Name) 
-        VALUES 
-        ('${User.username}', ${User.password}, ${User.location}, ${User.name})`
-        );
+    create: async function (table, data) {
+        console.log("table ="+ table);
+        console.log("data columns ="+ data.columns);
+        console.log("data values ="+ data.values);
+        var str =`INSERT INTO ${table} (${data.columns}) 
+        VALUES (${data.values})`;
+        console.log(str);
+        const result = await query(str);
 
+
+        // Username,Password,location,Name
+        // 'arzaqziad3','12345','Nablus','Arzaq Doudar'
+        // ('${User.username}', ${User.password}, ${User.location}, ${User.name})
         let message = 'Error in creating new user';
 
         if (result.affectedRows) {
