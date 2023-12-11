@@ -1,26 +1,42 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/usersRouters');
+import express from 'express';
+import createError from "http-errors";
+import indexRouter from "./routes/index.js";
+import usersRouter from "./routes/usersRouters.js";
+// import { expressjwt } from "express-jwt";
+// var { expressjwt: jwt } = require("express-jwt");
+import {expressjwt} from "express-jwt";
+import { jwtPassword } from './constants/login.constants.js';
 
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+
+// the urls in the unless are the uri that are opened to the public
+app.use(
+  expressjwt({
+    secret: jwtPassword,
+    algorithms: ["HS256"],
+    getToken: function fromHeaderOrQuerystring(req) {
+      if (
+        req.headers.authorization &&
+        req.headers.authorization.split(" ")[0] === "Bearer"
+      ) {
+        return req.headers.authorization.split(" ")[1];
+      } else if (req.query && req.query.token) {
+        return req.query.token;
+      }
+      return null;
+    },
+  }).unless({ path: [{method: "POST", url: "/users/login"}, {method: "POST", url: '/users'}] })
+);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+// app.use('/report' , reportRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -37,4 +53,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+export default app;

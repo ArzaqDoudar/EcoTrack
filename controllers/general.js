@@ -1,44 +1,76 @@
-const { query } = require('./db.js');
-const { listPerPage } = require('../config.js');
-function emptyOrRows(rows) {
-    if (!rows) {
-        return [];
+// const { json } = require('body-parser');
+
+import {query} from "./db.js"
+export const create = async (table, data) => {
+    var queryString = `INSERT INTO ${table} (${data.columns}) 
+    VALUES (${data.values})`;
+    console.log(queryString);
+    const result = await query(queryString);
+    console.log('result id = ');
+    console.log(result.insertId);
+    
+    let message = 'Error in creating new user';
+    
+    if (result.affectedRows) {
+        message = 'User created successfully, the user with id = '+ result.insertId;
     }
-    return rows;
-}
-module.exports = {
-    getMultiple: async function (table, ...columns) {
-        console.log('inside get multiple');
-        console.log(table);
-        const rows = await query(
-            `SELECT ${columns}
-        FROM ${table}`
-        );
-        console.log("data");
+    return { message };
+};
 
-        const data = emptyOrRows(rows);
-        console.log(data);
-        return data;
-    },
-    create: async function (table, data) {
-        console.log("table ="+ table);
-        console.log("data columns ="+ data.columns);
-        console.log("data values ="+ data.values);
-        var str =`INSERT INTO ${table} (${data.columns}) 
-        VALUES (${data.values})`;
-        console.log(str);
-        const result = await query(str);
+export const getWhere = async (table, data) => {
+    const queryString = `SELECT ${data.columns} FROM ${table} WHERE ${data.where}='${data.whereValue}'`;
+    console.log(queryString);
+    const rows = await query(queryString);
+    const result = rows || [];
+    return result;
+};
+// module.exports = {
+//     getMultiple: async function (table, ...columns) {
+//         const queryString = `SELECT ${columns} FROM ${table}`;
+//         console.log(queryString);
+//         const rows = await query(queryString);
+//         const data = rows || [];
+//         return data;
+//     },
+//     getWhere: async function (table, data) {
+//         const queryString = `SELECT ${data.columns} FROM ${table} WHERE  ${data.where} =  ${data.whereValue}`;
+//         console.log(queryString);
+//         const rows = await query(queryString);
+//         const result = rows || [];
+//         return result;
+//     },
+//     create: async function (table, data) {
+//         var queryString = `INSERT INTO ${table} (${data.columns}) 
+//         VALUES (${data.values})`;
+//         console.log(queryString);
+//         const result = await query(queryString);
+//         console.log('result id = ');
+//         console.log(result.insertId);
 
+//         let message = 'Error in creating new user';
 
-        // Username,Password,location,Name
-        // 'arzaqziad3','12345','Nablus','Arzaq Doudar'
-        // ('${User.username}', ${User.password}, ${User.location}, ${User.name})
-        let message = 'Error in creating new user';
+//         if (result.affectedRows) {
+//             message = 'User created successfully, the user with id = '+ result.insertId;
+//         }
+//         return { message };
+//     },
+//     update: async function (table, data) {
+//         var queryString = `UPDATE  ${table} SET ${data.set} WHERE  id = ${data.id}`;
+//         console.log(queryString);
+//         const result = await query(queryString);
+//         let message = 'Error in updating user';
+//         let newResult ;
+//         if (result.affectedRows) {
+//             const newQueryString = `SELECT * FROM ${table} WHERE  id =  ${data.id}`;
+//             console.log(newQueryString);
+//             const newRow = await query(newQueryString);
+//             newResult =newRow || [];
 
-        if (result.affectedRows) {
-            message = 'User created successfully';
-        }
-
-        return { message };
-    },
-}
+//             message = 'User updated successfully';
+//         }
+//         return {
+//             message,
+//             newResult
+//         };
+//     },
+// }
