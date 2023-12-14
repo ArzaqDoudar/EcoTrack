@@ -8,7 +8,6 @@ const swaggerDocument = JSON.parse(
 
 const router = express.Router();
 
-
 router.use('/', swaggerUi.serve);
 router.get('/', swaggerUi.setup(swaggerDocument));
 

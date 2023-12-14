@@ -7,8 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
-      "description": ""
+      "url": "http://localhost:3000/"
     }
   ],
   "paths": {
@@ -126,8 +125,7 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer"
-      },
-      "none": {}
+      }
     }
   }
 }
