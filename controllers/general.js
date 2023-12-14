@@ -4,10 +4,7 @@ import {query} from "./db.js"
 export const create = async (table, data) => {
     var queryString = `INSERT INTO ${table} (${data.columns}) 
     VALUES (${data.values})`;
-    console.log(queryString);
     const result = await query(queryString);
-    console.log('result id = ');
-    console.log(result.insertId);
     
     let message = 'Error in creating new user';
     

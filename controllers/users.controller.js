@@ -1,34 +1,7 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { jwtPassword, saltRounds } from "../constants/login.constants.js";
-import { create, getWhere } from "./general.js";
-
-const generatePasswordHash = async (password) => {
-  try {
-    const salt = await bcrypt.genSalt(saltRounds);
-    return bcrypt.hash(password, saltRounds);
-  } catch (error) {
-    throw error;
-  }
-};
-
-const checkPasswordWithHash = async (password, hash) => {
-  try {
-    console.log("password", password);
-    console.log("hash", hash);
-    return await bcrypt.compare(password, hash);
-  } catch (error) {
-    throw error;
-  }
-};
-
-const generateToken = async (user) => {
-  return jwt.sign(
-    { username: user.Username, location: user.location, name: user.Name, iat: Date.now() },
-    jwtPassword,
-    { algorithm: 'HS256' }
-  );
-};
+import {create, getWhere} from "./general.js";
+import {checkPasswordWithHash, generatePasswordHash} from "../utils/password.utils.js";
+import {generateToken} from "../utils/token.utils.js";
+import {createUser, USER_CODES} from "../models/users.model.js";
 
 //   getAllUsers: async function (req, res, next) { 
 //     try {
@@ -111,65 +84,67 @@ const generateToken = async (user) => {
 // };
 
 export const getAllUsers = async (req, res, next) => {
-  try {
-    res.send({ data: "HELLO" });
-  } catch (err) {
-    console.error(`Error while getting users `, err.message);
-    next(err);
-  }
+    try {
+        res.send({data: "HELLO"});
+    } catch (err) {
+        console.error(`Error while getting users `, err.message);
+        next(err);
+    }
 };
 
 export const insertUser = async (req, res, next) => {
-  const keys = Object.keys(req.body);
-  const values = Object.values(req.body);
-
-  var newValues = [];
-  for (let i = 0; i < values.length; i++) {
-    if (keys[i] != 'Password') {
-      newValues.push('"' + values[i] + '"');
-    } else {
-      let password = await generatePasswordHash(values[i]);
-      console.log(password);
-      newValues.push(`"${password}"`);
+    /*
+        #swagger.security = []
+     */
+    const payload = {
+        name: req.body.name,
+        username: req.body.username,
+        password: await generatePasswordHash(req.body.password),
+        location: req.body.location,
+    };
+    try {
+        const user = await createUser(payload);
+        console.log(user);
+        res.status(200).send(user);
+    } catch (err) {
+        switch(err) {
+            case USER_CODES.USER_INSERT_FAILED:
+                res.status(400).send({
+                    message: 'insert failed',
+                    status: 400,
+                });
+                break;
+            default:
+                res.status(500).send({
+                    message: 'internal server error',
+                    status: 500
+                });
+        }
     }
-  }
-  // values.forEach(value => {
-  //   if()
-  //   newValues.push('"' + value + '"');
-  // });
-  try {
-    res.send({
-      data: await create('users', {
-        columns: keys,
-        values: newValues,
-      })
-    });
-  } catch (err) {
-    console.error(`Error while insert users `, err.message);
-    next(err);
-  }
 };
 
 export const deleteUser = async (req, res, next) => {
-  res.send({ message: "delete user" });
+    res.send({message: "delete user"});
 };
 
 export const loginUser = async (req, res, next) => {
-  const username = req.body.username;
-  const password = req.body.password;
-  let user = (await getWhere('users', {
-    columns: '*', // 'id , username , location , name',
-    where: 'username',
-    whereValue: username,
-  }))[0];
-  console.log(user)
-  if (await checkPasswordWithHash(password, user.Password)) {
-    let token = await generateToken(user);
-    console.log("token", token);
-    res.send({
-      token: token
-    });
-  } else {
-    res.send()
-  }
+    /*
+     #swagger.security = []
+     */
+    const username = req.body.username;
+    const password = req.body.password;
+    let user = (await getWhere('users', {
+        columns: '*', // 'id , username , location , name',
+        where: 'username',
+        whereValue: username,
+    }))[0];
+    if (user && await checkPasswordWithHash(password, user.password)) {
+        let token = await generateToken(user);
+        console.log("token", token);
+        res.send({
+            token: token
+        });
+    } else {
+        res.status(400).send({error: 'incorrect credential'});
+    }
 };
