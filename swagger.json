@@ -118,6 +118,24 @@
           }
         }
       }
+    },
+    "/forcast/": {
+      "get": {
+        "tags": [
+          "forcast"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
