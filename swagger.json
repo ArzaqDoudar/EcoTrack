@@ -119,6 +119,7 @@
         }
       }
     },
+<<<<<<< HEAD
     "/users/{username}": {
       "get": {
         "tags": [
@@ -135,6 +136,14 @@
             }
           }
         ],
+=======
+    "/forcast/": {
+      "get": {
+        "tags": [
+          "forcast"
+        ],
+        "description": "",
+>>>>>>> d1a125a764937d4dd0a04bb440ec2df74f27cdf8
         "responses": {
           "200": {
             "description": "OK"
@@ -145,6 +154,7 @@
             "bearerAuth": []
           }
         ]
+<<<<<<< HEAD
       },
       "put": {
         "tags": [
@@ -191,6 +201,8 @@
             }
           }
         }
+=======
+>>>>>>> d1a125a764937d4dd0a04bb440ec2df74f27cdf8
       }
     }
   },
