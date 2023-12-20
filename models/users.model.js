@@ -4,6 +4,7 @@ export const USER_CODES = {
     USER_INSERT_FAILED: 'USER_INSERT_FAILED',
     USER_TABLE_EMPTY: 'USER_TABLE_EMPTY',
     USER_NOT_FOUND: 'USER_NOT_FOUND',
+    USER_UPDATE_FAILED: 'USER_UPDATE_FAILED',
 }
 
 export const getAllUsersModel = async () => {
@@ -24,6 +25,7 @@ export const getUserByUsernameModel = async (user) => {
         throw USER_CODES.USER_NOT_FOUND;
     }
 }
+
 
 export const createUserModel = async (user) => {
     const results = await executeSql(
