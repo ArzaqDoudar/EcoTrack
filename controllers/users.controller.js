@@ -1,94 +1,54 @@
 import {create, getWhere} from "./general.js";
 import {checkPasswordWithHash, generatePasswordHash} from "../utils/password.utils.js";
 import {generateToken} from "../utils/token.utils.js";
-import {createUser, USER_CODES} from "../models/users.model.js";
-
-//   getAllUsers: async function (req, res, next) { 
-//     try {
-//       res.send({ data: await getMultiple('users', 'Id', 'username', 'Name', 'location') });
-//     } catch (err) {
-//       console.error(`Error while getting users `, err.message);
-//       next(err);
-//     }
-//   },
-//   getUserById: async function (req, res, next) {
-//     try {
-//       res.send({
-//         data: await getWhere('users', {
-//           columns :'*', // 'id , username , location , name',
-//           where: 'Id',
-//           whereValue : '20',
-//         })
-//       });
-//     } catch (err) {
-//       console.error(`Error while getting user by id `, err.message);
-//       next(err);
-//     }
-//     // res.send({ message: "delete user" });
-//   },
-//   insertUser: async function (req, res, next) {
-//     const keys = Object.keys(req.body);
-//     const values = Object.values(req.body);
-
-//     var newValues=[];
-//     values.forEach(value => {
-//       newValues.push( '"' + value +'"');
-//     });
-//     try {
-//       res.send({
-//         data: await create('users', {
-//           columns:keys,
-//           values : newValues,
-//         })
-//       });
-//     } catch (err) {
-//       console.error(`Error while insert users `, err.message);
-//       next(err);
-//     }
-//   },
-
-// }
-// export const updateUser = async (req, res, next) => {
-//   const id = req.query.id;
-//   console.log('id = ' , id );
-//   const keys = Object.keys(req.body);
-//   const values = Object.values(req.body);
-
-//   var setString = ``;
-//   for(let i = 0 ; i< keys.length; i++){
-//     setString = setString + `${keys[i]} = '${values[i]}'`;
-//     if(i != keys.length -1){
-//       setString = setString + `,`;
-//     }
-//   }    
-//   try {
-//     res.send({
-//       data: await update('users', {
-//         set:setString,
-//         id : id,
-//       })
-//     });
-//   } catch (err) {
-//     console.error(`Error while update user with id = ${id} \n`, err.message);
-//     next(err);
-//   }
-// }
-
-// export const getAllUsers = async (req, res, next) => {
-//   try {
-//     res.send({ data: await getMultiple('users', 'Id', 'username', 'Name', 'location') });
-//   } catch (err) {
-//     console.error(`Error while getting users `, err.message);
-//     next(err);
-//   }
-// };
+import {getAllUsersModel, getUserByUsernameModel, createUserModel,updateUserModel, USER_CODES} from "../models/users.model.js";
 
 export const getAllUsers = async (req, res, next) => {
     try {
-        res.send({data: "HELLO"});
+        const users = await getAllUsersModel();
+        console.log(users);
+        res.status(200).send(users);
     } catch (err) {
-        console.error(`Error while getting users `, err.message);
-        next(err);
+        switch(err) {
+            case USER_CODES.USER_TABLE_EMPTY:
+                res.status(400).send({
+                    message: 'there is no users in this sys',
+                    status: 400,
+                });
+                break;
+            default:
+                res.status(500).send({
+                    message: 'internal server error',
+                    status: 500
+                });
+        }
+    }
+};
+
+export const getUserByUsername = async (req, res, next) => {
+
+    const payload = {
+        username: req.params.username,
+    };
+
+    try {
+        const user = await getUserByUsernameModel(payload);
+        console.log(user);
+        res.status(200).send(user);
+    } catch (err) {
+        switch(err) {
+            case USER_CODES.USER_NOT_FOUND:
+                res.status(400).send({
+                    message: 'this username not exist',
+                    status: 400,
+                });
+                break;
+            default:
+                res.status(500).send({
+                    message: 'internal server error',
+                    status: 500
+                });
+        }
     }
 };
 
@@ -103,7 +63,7 @@ export const insertUser = async (req, res, next) => {
         location: req.body.location, 
     };
     try {
-        const user = await createUser(payload);
+        const user = await createUserModel(payload);
         console.log(user);
         res.status(200).send(user);
     } catch (err) {
@@ -124,14 +84,17 @@ export const insertUser = async (req, res, next) => {
 };
 
 export const updateUser = async (req, res, next) => {
-    // res.send({message: "update user"});
     const payload = {
+        username: req.params.username,
         name: req.body.name,
-        password: await generatePasswordHash(req.body.password),
+        password: req.body.password,
+        // password: await generatePasswordHash(req.body.password),
         location: req.body.location, 
     };
+    // res.send({message: "update user" , user: payload});
     try {
-        const user = await updateUser(payload);
+        console.log(payload);
+        const user = await updateUserModel(payload);
         console.log(user);
         res.status(200).send(user);
     } catch (err) {
@@ -152,14 +115,9 @@ export const updateUser = async (req, res, next) => {
 
 };
 
-export const getUserByUsername = async (req, res, next) => {
-    res.send({message: "getUserByUsername"});
-};
-
 export const deleteUser = async (req, res, next) => {
     res.send({message: "delete user"});
 };
-
 
 export const loginUser = async (req, res, next) => {
     /*
