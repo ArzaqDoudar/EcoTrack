@@ -100,7 +100,7 @@ export const insertUser = async (req, res, next) => {
         name: req.body.name,
         username: req.body.username,
         password: await generatePasswordHash(req.body.password),
-        location: req.body.location,
+        location: req.body.location, 
     };
     try {
         const user = await createUser(payload);
@@ -123,9 +123,43 @@ export const insertUser = async (req, res, next) => {
     }
 };
 
+export const updateUser = async (req, res, next) => {
+    // res.send({message: "update user"});
+    const payload = {
+        name: req.body.name,
+        password: await generatePasswordHash(req.body.password),
+        location: req.body.location, 
+    };
+    try {
+        const user = await updateUser(payload);
+        console.log(user);
+        res.status(200).send(user);
+    } catch (err) {
+        switch(err) {
+        //     case USER_CODES.USER_INSERT_FAILED:
+        //         res.status(400).send({
+        //             message: 'insert failed',
+        //             status: 400,
+        //         });
+        //         break;
+        //     default:
+        //         res.status(500).send({
+        //             message: 'internal server error',
+        //             status: 500
+        //         });
+        }
+    }
+
+};
+
+export const getUserByUsername = async (req, res, next) => {
+    res.send({message: "getUserByUsername"});
+};
+
 export const deleteUser = async (req, res, next) => {
     res.send({message: "delete user"});
 };
+
 
 export const loginUser = async (req, res, next) => {
     /*
