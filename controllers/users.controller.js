@@ -84,7 +84,7 @@ export const insertUser = async (req, res, next) => {
 
 export const updateUser = async (req, res, next) => {
     const payload = {
-        username: req.params.username,
+        username: req.user.username,
         name: req.body.name,
         location: req.body.location,
     };

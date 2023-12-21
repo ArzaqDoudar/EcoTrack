@@ -9,7 +9,7 @@ router.post('/' , insertUser);
 // router.get('/' , getUserById);
 //update the routes
 router.get('/:username' , getUserByUsername);
-router.put('/:username' , updateUser);
+router.put('/' , updateUser);
 router.put('/changepassword/:username' , changePassword);
 router.delete('/:username' , deleteUser);
 

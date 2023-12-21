@@ -8,19 +8,17 @@ export const USER_CODES = {
 }
 
 export const getAllUsersModel = async () => {
-    const results = await executeSql("SELECT id, username, name  FROM users");
-    console.log(results);
+    const results = await executeSql("SELECT id, username, name FROM users");
     if (results) {
-        return { ...results , password: undefined };
+        return [ ...results ];
     } else {
         throw USER_CODES.USER_TABLE_EMPTY;
     }
 }
 export const getUserByUsernameModel = async (user) => {
-    const result = await executeSql("SELECT id, username, name , password  FROM users WHERE username = ?", [user.username]);
-    console.log(result);
+    const result = await executeSql("SELECT id, username, name ,password FROM users WHERE username = ?", [user.username]);
     if (result) {
-        return result[0];
+        return { ...result[0] };
     } else {
         throw USER_CODES.USER_NOT_FOUND;
     }
@@ -39,6 +37,8 @@ export const createUserModel = async (user) => {
         throw USER_CODES.USER_INSERT_FAILED;
     }
 }
+
+
 export const updateUserModel = async (user) => {
     try {
         let sqlString = "UPDATE users SET ";
