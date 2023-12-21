@@ -26,6 +26,7 @@ export const getUserByUsernameModel = async (user) => {
     }
 }
 
+
 export const createUserModel = async (user) => {
     const results = await executeSql(
         "insert into users(name, username, password, location) values (?,?,?,?)",
