@@ -10,6 +10,6 @@ router.post('/' , insertUser);
 //update the routes
 router.get('/:username' , getUserByUsername);
 router.put('/:username' , updateUser);
-// router.delete('/' , deleteUser);
+router.delete('/:username' , deleteUser);
 
 export default router;

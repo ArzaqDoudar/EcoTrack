@@ -3,6 +3,7 @@ import axios from 'axios';
 import createError from "http-errors";
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.routes.js";
+import dataRouter from "./routes/data.routes.js";
 import weatherRouter from "./routes/weather.routes.js";
 import DocsRouter from "./routes/docs.routes.js";
 import {expressjwt} from "express-jwt";
@@ -58,6 +59,14 @@ app.use('/users', usersRouter
         }]
         #swagger.tags = ['Users']
     */
+);
+app.use('/data', dataRouter
+/*
+    #swagger.security = [{
+          "bearerAuth": []
+    }]
+    #swagger.tags = ['data']
+*/
 );
 app.use('/forcast', weatherRouter
     /*

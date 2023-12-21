@@ -57,6 +57,7 @@ CREATE TABLE `community_report` (
   `description` varchar(45) DEFAULT NULL,
   `location` varchar(1024) DEFAULT NULL,
   `time_stamp` varchar(45) DEFAULT NULL,
+  `image_link` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `community_report_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
