@@ -39,6 +39,8 @@ export const createUserModel = async (user) => {
         throw USER_CODES.USER_INSERT_FAILED;
     }
 }
+
+
 export const updateUserModel = async (user) => {
     try {
         let sqlString = "UPDATE users SET ";

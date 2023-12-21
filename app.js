@@ -4,6 +4,7 @@ import createError from "http-errors";
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.routes.js";
 import weatherRouter from "./routes/weather.routes.js";
+import reportRouter from "./routes/report.routes.js";
 import DocsRouter from "./routes/docs.routes.js";
 import {expressjwt} from "express-jwt";
 import {jwtPassword} from './constants/login.constants.js';
@@ -67,7 +68,15 @@ app.use('/forcast', weatherRouter
         #swagger.tags = ['forcast']
     */
 );
-
+app.use('/report', reportRouter
+    /*
+        #swagger.security = [{
+              "bearerAuth": []
+        }]
+        #swagger.tags = ['report']
+    */
+   
+);
 
 
 // catch 404 and forward to error handler
