@@ -8,3 +8,10 @@ export const generateToken = async (user) => {
         {algorithm: 'HS256'}
     );
 };
+
+export const parseToken = (token) => {
+    if (!token) {
+        return {};
+    }
+    return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+};

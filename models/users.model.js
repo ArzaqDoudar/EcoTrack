@@ -8,19 +8,17 @@ export const USER_CODES = {
 }
 
 export const getAllUsersModel = async () => {
-    const results = await executeSql("SELECT id, username, name  FROM users");
-    console.log(results);
+    const results = await executeSql("SELECT id, username, name FROM users");
     if (results) {
-        return { ...results };
+        return [ ...results ];
     } else {
         throw USER_CODES.USER_TABLE_EMPTY;
     }
 }
 export const getUserByUsernameModel = async (user) => {
     const result = await executeSql("SELECT id, username, name ,password FROM users WHERE username = ?", [user.username]);
-    console.log(result);
     if (result) {
-        return { result };
+        return { ...result[0] };
     } else {
         throw USER_CODES.USER_NOT_FOUND;
     }

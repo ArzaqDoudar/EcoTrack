@@ -13,6 +13,9 @@
   "paths": {
     "/": {
       "get": {
+        "tags": [
+          "Users"
+        ],
         "description": "",
         "responses": {
           "default": {
@@ -79,6 +82,45 @@
                     "example": "any"
                   },
                   "password": {
+                    "example": "any"
+                  },
+                  "location": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
                     "example": "any"
                   },
                   "location": {
@@ -157,55 +199,6 @@
             "bearerAuth": []
           }
         ]
-      },
-      "put": {
-        "tags": [
-          "Users"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "username",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "example": "any"
-                  },
-                  "location": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/users/changepassword/{username}": {
