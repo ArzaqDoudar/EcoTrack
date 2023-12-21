@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/' , getAllData);
 // router.post('/login' , loginUser)
-router.post('/' , insertData);
+// router.post('/' , insertData);
 // // router.get('/' , getUserById);
 // //update the routes
 // router.get('/:username' , getUserByUsername);

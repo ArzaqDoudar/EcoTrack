@@ -11,7 +11,7 @@ export const getAllUsersModel = async () => {
     const results = await executeSql("SELECT id, username, name  FROM users");
     console.log(results);
     if (results) {
-        return { ...results };
+        return { ...results , password: undefined };
     } else {
         throw USER_CODES.USER_TABLE_EMPTY;
     }
@@ -20,7 +20,7 @@ export const getUserByUsernameModel = async (user) => {
     const result = await executeSql("SELECT id, username, name , password  FROM users WHERE username = ?", [user.username]);
     console.log(result);
     if (result) {
-        return { result };
+        return result[0];
     } else {
         throw USER_CODES.USER_NOT_FOUND;
     }

@@ -1,11 +1,6 @@
-import { checkPasswordWithHash, generatePasswordHash } from "../utils/password.utils.js";
 import { generateToken } from "../utils/token.utils.js";
-import { getAllUsersModel, getUserByUsernameModel, createUserModel, updateUserModel, USER_CODES } from "../models/users.model.js";
-import {create, getWhere} from "./general.js";
 import {checkPasswordWithHash, generatePasswordHash,comparePassword} from "../utils/password.utils.js";
-import {generateToken} from "../utils/token.utils.js";
 import {getAllUsersModel, getUserByUsernameModel, createUserModel,updateUserModel,updateUserPassword, USER_CODES} from "../models/users.model.js";
-//import { comparePassword, generatePasswordHash } from "../utils/password.utils.js"; 
 
 export const getAllUsers = async (req, res, next) => {
     try {
@@ -15,26 +10,26 @@ export const getAllUsers = async (req, res, next) => {
     } catch (err) {
         switch (err) {
             case USER_CODES.USER_TABLE_EMPTY:
-                res.status(400).send({
-                    message: 'there is no users in this sys',
-                    status: 400,
-                });
-                break;
+            res.status(400).send({
+                message: 'there is no users in this sys',
+                status: 400,
+            });
+            break;
             default:
-                res.status(500).send({
-                    message: 'internal server error',
-                    status: 500
-                });
+            res.status(500).send({
+                message: 'internal server error',
+                status: 500
+            });
         }
     }
 };
 
 export const getUserByUsername = async (req, res, next) => {
-
+    
     const payload = {
         username: req.params.username,
     };
-
+    
     try {
         const user = await getUserByUsernameModel(payload);
         console.log(user);
@@ -42,24 +37,24 @@ export const getUserByUsername = async (req, res, next) => {
     } catch (err) {
         switch (err) {
             case USER_CODES.USER_NOT_FOUND:
-                res.status(400).send({
-                    message: 'this username not exist',
-                    status: 400,
-                });
-                break;
+            res.status(400).send({
+                message: 'this username not exist',
+                status: 400,
+            });
+            break;
             default:
-                res.status(500).send({
-                    message: 'internal server error',
-                    status: 500
-                });
+            res.status(500).send({
+                message: 'internal server error',
+                status: 500
+            });
         }
     }
 };
 
 export const insertUser = async (req, res, next) => {
     /*
-        #swagger.security = []
-     */
+    #swagger.security = []
+    */
     const payload = {
         name: req.body.name,
         username: req.body.username,
@@ -73,16 +68,16 @@ export const insertUser = async (req, res, next) => {
     } catch (err) {
         switch (err) {
             case USER_CODES.USER_INSERT_FAILED:
-                res.status(400).send({
-                    message: 'insert failed',
-                    status: 400,
-                });
-                break;
+            res.status(400).send({
+                message: 'insert failed',
+                status: 400,
+            });
+            break;
             default:
-                res.status(500).send({
-                    message: 'internal server error',
-                    status: 500
-                });
+            res.status(500).send({
+                message: 'internal server error',
+                status: 500
+            });
         }
     }
 };
@@ -102,19 +97,19 @@ export const updateUser = async (req, res, next) => {
     } catch (err) {
         switch (err) {
             case USER_CODES.USER_UPDATE_FAILED:
-                res.status(400).send({
-                    message: 'update user failed',
-                    status: 400,
-                });
-                break;
+            res.status(400).send({
+                message: 'update user failed',
+                status: 400,
+            });
+            break;
             default:
-                res.status(500).send({
-                    message: 'internal server error',
-                    status: 500
-                });
+            res.status(500).send({
+                message: 'internal server error',
+                status: 500
+            });
         }
     }
-
+    
 };
 
 export const deleteUser = async (req, res, next) => {
@@ -123,15 +118,11 @@ export const deleteUser = async (req, res, next) => {
 
 export const loginUser = async (req, res, next) => {
     /*
-     #swagger.security = []
-     */
+    #swagger.security = []
+    */
     const username = req.body.username;
     const password = req.body.password;
-    let user = (await getWhere('users', {
-        columns: '*', // 'id , username , location , name',
-        where: 'username',
-        whereValue: username,
-    }))[0];
+    let user = await getUserByUsernameModel({username: username});
     if (user && await checkPasswordWithHash(password, user.password)) {
         let token = await generateToken(user);
         console.log("token", token);
@@ -163,30 +154,30 @@ export const changePassword = async (req, res, next) => {
         console.log("password is :");
         console.log(user.result[0].password);
         const isOldPasswordValid = await comparePassword(payload.oldPassword, user.result[0].password);
-
+        
         if (!isOldPasswordValid) {
             throw new Error('Old password is incorrect');
         }
-
+        
         // Generate a hash for the new password
         const newPasswordHash = await generatePasswordHash(payload.newPassword);
         // Update the user's password in the database
         const updatedUser = await updateUserPassword(user.result[0].username, newPasswordHash);     
         res.status(200).send(updatedUser);
-      //  return updatedUser;
+        //  return updatedUser;
     } catch (error) {
         switch(error) {
-                case USER_CODES.USER_PASSWORD_UPDATE_FAILD:
-                    res.status(400).send({
-                        message: 'password not updated ',
-                        status: 400,
-                    });
-                    break;
-                default:
-                    res.status(500).send({
-                        message: 'internal server error',
-                        status: 500
-                    });
-            } // Handle the error appropriately in your application
+            case USER_CODES.USER_PASSWORD_UPDATE_FAILD:
+            res.status(400).send({
+                message: 'password not updated ',
+                status: 400,
+            });
+            break;
+            default:
+            res.status(500).send({
+                message: 'internal server error',
+                status: 500
+            });
+        } // Handle the error appropriately in your application
     }
 };
