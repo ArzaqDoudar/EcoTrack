@@ -8,6 +8,7 @@ import reportRouter from "./routes/report.routes.js";
 import DocsRouter from "./routes/docs.routes.js";
 import {expressjwt} from "express-jwt";
 import {jwtPassword} from './constants/login.constants.js';
+import { userMiddleware } from './middleware/user.middleware.js';
 //import module from './apiweather.js';
 //import apiweather from './apiweather.js';
 //import getWeatherData from './weatherApi';
@@ -28,15 +29,17 @@ app.use(
         secret: jwtPassword,
         algorithms: ["HS256"],
         getToken: function fromHeaderOrQuerystring(req) {
+            let token = null;
             if (
                 req.headers.authorization &&
                 req.headers.authorization.split(" ")[0] === "Bearer"
             ) {
-                return req.headers.authorization.split(" ")[1];
+                token = req.headers.authorization.split(" ")[1];
             } else if (req.query && req.query.token) {
-                return req.query.token;
+                token = req.query.token;
             }
-            return null;
+            req.token = token;
+            return token;
         },
     }).unless({
         path: [
@@ -50,6 +53,8 @@ app.use(
         ]
     })
 );
+
+app.use(userMiddleware);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter

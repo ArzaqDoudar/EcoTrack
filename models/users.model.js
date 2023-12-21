@@ -4,23 +4,21 @@ export const USER_CODES = {
     USER_INSERT_FAILED: 'USER_INSERT_FAILED',
     USER_TABLE_EMPTY: 'USER_TABLE_EMPTY',
     USER_NOT_FOUND: 'USER_NOT_FOUND',
-    USER_UPDATE_FAILED: 'USER_UPDATE_FAILED',
+    USER_PASSWORD_UPDATE_FAILD: 'USER_PASSWORD_UPDATE_FAILD',
 }
 
 export const getAllUsersModel = async () => {
-    const results = await executeSql("SELECT id, username, name  FROM users");
-    console.log(results);
+    const results = await executeSql("SELECT id, username, name FROM users");
     if (results) {
-        return { ...results };
+        return [ ...results ];
     } else {
         throw USER_CODES.USER_TABLE_EMPTY;
     }
 }
 export const getUserByUsernameModel = async (user) => {
-    const result = await executeSql("SELECT id, username, name  FROM users WHERE username = ?", [user.username]);
-    console.log(result);
+    const result = await executeSql("SELECT id, username, name ,password FROM users WHERE username = ?", [user.username]);
     if (result) {
-        return { result };
+        return { ...result[0] };
     } else {
         throw USER_CODES.USER_NOT_FOUND;
     }
@@ -78,3 +76,20 @@ export const updateUserModel = async (user) => {
         throw USER_CODES.USER_UPDATE_FAILED; 
     }
 }
+
+
+export const updateUserPassword = async (username, newPasswordHash) => {
+    const results = await executeSql(
+        "update users set password = ? where username = ?",
+        [newPasswordHash, username]
+    );
+
+    if (results && results.affectedRows) {
+        // Assuming you have a getUserById function to retrieve the updated user
+        const updatedUser = await getUserByUsernameModel(username);
+        return updatedUser;
+    } else {
+        throw USER_CODES.USER_PASSWORD_UPDATE_FAILD;
+    }
+};
+

@@ -1,7 +1,8 @@
-import { create, getWhere } from "./general.js";
-import { checkPasswordWithHash, generatePasswordHash } from "../utils/password.utils.js";
-import { generateToken } from "../utils/token.utils.js";
-import { getAllUsersModel, getUserByUsernameModel, createUserModel, updateUserModel, USER_CODES } from "../models/users.model.js";
+import {create, getWhere} from "./general.js";
+import {checkPasswordWithHash, generatePasswordHash,comparePassword} from "../utils/password.utils.js";
+import {generateToken} from "../utils/token.utils.js";
+import {getAllUsersModel, getUserByUsernameModel, createUserModel,updateUserModel,updateUserPassword, USER_CODES} from "../models/users.model.js";
+//import { comparePassword, generatePasswordHash } from "../utils/password.utils.js"; 
 
 export const getAllUsers = async (req, res, next) => {
     try {
@@ -85,7 +86,7 @@ export const insertUser = async (req, res, next) => {
 
 export const updateUser = async (req, res, next) => {
     const payload = {
-        username: req.params.username,
+        username: req.user.username,
         name: req.body.name,
         location: req.body.location,
     };
@@ -136,5 +137,53 @@ export const loginUser = async (req, res, next) => {
         });
     } else {
         res.status(400).send({ error: 'incorrect credential' });
+    }
+};
+
+
+// Replace with your actual password hashing library
+
+export const changePassword = async (req, res, next) => {
+    const payload = {
+        username: req.params.username,
+        oldPassword: req.body.password, // Include the old password here
+        newPassword: req.body.newPassword, // Include the new password here
+    };
+    try {
+        const user = await getUserByUsernameModel(payload);
+        console.log(user);
+        if (!user) {
+            throw new Error('User not found');
+        }
+        
+        // Verify the old password
+        console.log("password is :");
+        console.log(user.result[0].password);
+        const isOldPasswordValid = await comparePassword(payload.oldPassword, user.result[0].password);
+
+        if (!isOldPasswordValid) {
+            throw new Error('Old password is incorrect');
+        }
+
+        // Generate a hash for the new password
+        const newPasswordHash = await generatePasswordHash(payload.newPassword);
+        // Update the user's password in the database
+        const updatedUser = await updateUserPassword(user.result[0].username, newPasswordHash);     
+        res.status(200).send(updatedUser);
+      //  return updatedUser;
+    } catch (error) {
+        switch(error) {
+                case USER_CODES.USER_PASSWORD_UPDATE_FAILD:
+                    res.status(400).send({
+                        message: 'password not updated ',
+                        status: 400,
+                    });
+                    break;
+                default:
+                    res.status(500).send({
+                        message: 'internal server error',
+                        status: 500
+                    });
+            } // Handle the error appropriately in your application
     }
 };
