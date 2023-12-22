@@ -10,6 +10,6 @@ router.post('/' , insertUser);
 //update the routes
 router.get('/:username' , getUserByUsername);
 router.put('/' , updateUser);
-router.put('/changepassword/:username' , changePassword);
+router.put('/changepassword' , changePassword);
 
 export default router;

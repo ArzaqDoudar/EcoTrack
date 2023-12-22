@@ -201,22 +201,12 @@
         ]
       }
     },
-    "/users/changepassword/{username}": {
+    "/users/changepassword": {
       "put": {
         "tags": [
           "Users"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "username",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"

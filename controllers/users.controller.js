@@ -145,7 +145,7 @@ export const loginUser = async (req, res, next) => {
 
 export const changePassword = async (req, res, next) => {
     const payload = {
-        username: req.params.username,
+        username: req.user.username,
         oldPassword: req.body.password, // Include the old password here
         newPassword: req.body.newPassword, // Include the new password here
     };
@@ -158,8 +158,8 @@ export const changePassword = async (req, res, next) => {
         
         // Verify the old password
         console.log("password is :");
-        console.log(user.result[0].password);
-        const isOldPasswordValid = await comparePassword(payload.oldPassword, user.result[0].password);
+        console.log(user.password);
+        const isOldPasswordValid = await comparePassword(payload.oldPassword, user.password);
 
         if (!isOldPasswordValid) {
             throw new Error('Old password is incorrect');
@@ -168,8 +168,8 @@ export const changePassword = async (req, res, next) => {
         // Generate a hash for the new password
         const newPasswordHash = await generatePasswordHash(payload.newPassword);
         // Update the user's password in the database
-        const updatedUser = await updateUserPassword(user.result[0].username, newPasswordHash);     
-        res.status(200).send(updatedUser);
+        const updatedUser = await updateUserPassword(user.username, newPasswordHash);     
+        res.status(200).send({message : "password update successfuly"});
       //  return updatedUser;
     } catch (error) {
         switch(error) {
