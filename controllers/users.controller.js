@@ -169,7 +169,7 @@ export const changePassword = async (req, res, next) => {
         const newPasswordHash = await generatePasswordHash(payload.newPassword);
         // Update the user's password in the database
         const updatedUser = await updateUserPassword(user.username, newPasswordHash);     
-        res.status(200).send(updatedUser);
+        res.status(200).send({message : "password update successfuly"});
       //  return updatedUser;
     } catch (error) {
         switch(error) {
