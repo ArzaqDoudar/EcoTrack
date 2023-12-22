@@ -139,7 +139,7 @@ export const loginUser = async (req, res, next) => {
 
 export const changePassword = async (req, res, next) => {
     const payload = {
-        username: req.params.username,
+        username: req.user.username,
         oldPassword: req.body.password, // Include the old password here
         newPassword: req.body.newPassword, // Include the new password here
     };
