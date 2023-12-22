@@ -3,6 +3,7 @@ import axios from 'axios';
 import createError from "http-errors";
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.routes.js";
+import dataRouter from "./routes/data.routes.js";
 import weatherRouter from "./routes/weather.routes.js";
 import reportRouter from "./routes/report.routes.js";
 import DocsRouter from "./routes/docs.routes.js";
@@ -57,6 +58,14 @@ app.use(
 app.use(userMiddleware);
 
 app.use('/', indexRouter);
+app.use('/data-collection', dataRouter
+    /*
+        #swagger.security = [{
+              "bearerAuth": []
+        }]
+        #swagger.tags = ['DataCollection']
+    */
+);
 app.use('/users', usersRouter
     /*
         #swagger.security = [{
