@@ -152,8 +152,8 @@ export const changePassword = async (req, res, next) => {
         
         // Verify the old password
         console.log("password is :");
-        console.log(user.result[0].password);
-        const isOldPasswordValid = await comparePassword(payload.oldPassword, user.result[0].password);
+        console.log(user.password);
+        const isOldPasswordValid = await comparePassword(payload.oldPassword, user.password);
         
         if (!isOldPasswordValid) {
             throw new Error('Old password is incorrect');
@@ -162,8 +162,8 @@ export const changePassword = async (req, res, next) => {
         // Generate a hash for the new password
         const newPasswordHash = await generatePasswordHash(payload.newPassword);
         // Update the user's password in the database
-        const updatedUser = await updateUserPassword(user.result[0].username, newPasswordHash);     
-        res.status(200).send(updatedUser);
+        const updatedUser = await updateUserPassword(user.username, newPasswordHash);     
+        res.status(200).send({message: "passwoed updata successfuly" , status : 200});
         //  return updatedUser;
     } catch (error) {
         switch(error) {
