@@ -3,9 +3,10 @@ import axios from 'axios';
 import fs from "fs";
 import FormData from "form-data";
 const data = new FormData();
-data.append('file', fs.createReadStream('/PATH/TO/diagram-phishing-attack.png'));
 
-export async function uploadImage() {
+
+export async function uploadImage(fileBuffer) {
+  data.append('file', fileBuffer);
   const options = {
     method: 'POST',
     url: 'https://upload-image-and-return-url-by-thichthicodeteam.p.rapidapi.com/api/upload-image',
