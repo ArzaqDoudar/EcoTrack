@@ -7,8 +7,8 @@ import multer from 'multer';
 var upload = multer();
 
 router.get('/' , getAllReports);
-router.post('/user/:username' , getUserReports);
+router.get('/user/:username' , getUserReports);
 router.post('/' , insertReport);
-router.post('/type/', getReportsByType);
+router.get('/type/:report_type', getReportsByType);
 
 export default router;

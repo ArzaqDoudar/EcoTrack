@@ -82,7 +82,7 @@ export const insertReport = async (req, res, next) => {
 
 export const getReportsByType = async (req, res, next) => {
     const payload = {
-        report_type: req.body.report_type,
+        report_type: req.params.report_type,
       };
   try {
     const reports = await getReportByTypeModel(payload);
