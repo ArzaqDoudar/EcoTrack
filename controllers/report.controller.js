@@ -52,10 +52,8 @@ export const uploadImageToReport = async (req, res, next) => {
 
 export const insertReport = async (req, res, next) => {
   try {
-    // const imageLink = await uploadImage();
-    // console.log(imageLink);
     const payload = {
-      REPORTname: req.REPORT.REPORTname,
+      username: req.user.username,
       report_type: req.body.report_type,
       description: req.body.description,
       location: req.body.location,
