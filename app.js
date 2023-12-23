@@ -9,11 +9,12 @@ import DocsRouter from "./routes/docs.routes.js";
 import {expressjwt} from "express-jwt";
 import {jwtPassword} from './constants/login.constants.js';
 import { userMiddleware } from './middleware/user.middleware.js';
+import firebase from 'firebase-admin';
 //import module from './apiweather.js';
 //import apiweather from './apiweather.js';
 //import getWeatherData from './weatherApi';
 const app = express();
-
+// var serviceAccount = require()
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
