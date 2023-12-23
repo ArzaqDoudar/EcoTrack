@@ -13,6 +13,7 @@ import { userMiddleware } from './middleware/user.middleware.js';
 
 const app = express();
 
+
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
@@ -21,6 +22,11 @@ app.use('/docs', DocsRouter
         #swagger.ignore = true
      */
 );
+
+
+// for parsing multipart/form-data
+// app.use(upload.array()); 
+// app.use(express.static('public'));
 
 // the urls in the unless are the uri that are opened to the public
 app.use(

@@ -33,7 +33,6 @@ export const createUserModel = async (user) => {
         "insert into users(name, username, password, location) values (?,?,?,?)",
         [user.name, user.username, user.password, user.location]
     );
-
     if (results && results.affectedRows) {
         return { ...user, id: results.insertId, password: undefined }; // return a copy of the user obj and override the id with the db id.
     } else {
