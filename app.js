@@ -4,6 +4,7 @@ import createError from "http-errors";
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.routes.js";
 import dataRouter from "./routes/data.routes.js";
+import educationalRouter from "./routes/educationalresources.routes.js";
 import weatherRouter from "./routes/weather.routes.js";
 import reportRouter from "./routes/report.routes.js";
 import DocsRouter from "./routes/docs.routes.js";
@@ -73,6 +74,14 @@ app.use('/users', usersRouter
               "bearerAuth": []
         }]
         #swagger.tags = ['Users']
+    */
+);
+app.use('/educational-resources', educationalRouter
+    /*
+        #swagger.security = [{
+              "bearerAuth": []
+        }]
+        #swagger.tags = ['Educational Resources']
     */
 );
 app.use('/forcast', weatherRouter
