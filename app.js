@@ -3,6 +3,7 @@ import axios from 'axios';
 import createError from "http-errors";
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.routes.js";
+import dataRouter from "./routes/data.routes.js";
 import weatherRouter from "./routes/weather.routes.js";
 import reportRouter from "./routes/report.routes.js";
 import DocsRouter from "./routes/docs.routes.js";
@@ -64,6 +65,14 @@ app.use(
 app.use(userMiddleware);
 
 app.use('/', indexRouter);
+app.use('/data-collection', dataRouter
+    /*
+        #swagger.security = [{
+              "bearerAuth": []
+        }]
+        #swagger.tags = ['DataCollection']
+    */
+);
 app.use('/users', usersRouter
     /*
         #swagger.security = [{
@@ -105,61 +114,5 @@ app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.send(err)
 });
-
-
-////////////////////
-
-//const api = require('./apiweather.js')
-
-// app.js
-// // weatherApi.js
-// const axios = require('axios');
-
-// const getWeatherData = async () => {
-//   const options = {
-//     method: 'GET',
-//     url: 'https://tomorrow-io1.p.rapidapi.com/v4/weather/forecast',
-//     params: {
-//       location: '42.15,82.1',
-//       timesteps: '1h',
-//       units: 'metric'
-//     },
-//     headers: {
-//       'X-RapidAPI-Key': '395b7cace2msh03c0453c05785d9p19b29djsn80ef7b724a99',
-//       'X-RapidAPI-Host': 'tomorrow-io1.p.rapidapi.com'
-//     }
-//   };
-
-//   try {
-//     const response = await axios.request(options);
-//     console.log(response.data);
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
-// export default getWeatherData;
-// //module.exports = getWeatherData;
-
-
-// const express = require("express");
-// const axios = require("axios");
-
-// const app = express();
-
-// app.get("/forcast", async (req, res, next) => {
-    
- 
-// }
-
-
-
-// app.listen(3000, () => {
-//   console.log("Connected");
-// });
-///////////////////
-
-
-
-
 
 export default app;
