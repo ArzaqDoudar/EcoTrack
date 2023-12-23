@@ -24,14 +24,14 @@ export const createReportModel = async (report) => {
         username: report.username
     }
     const user = await getUserByUsernameModel(payload);
-    console.log("user in createReportModel"+user.result);
+
     const results = await executeSql(
-        "insert into community_report(user_id, report_type, description, location, time_stamp) values (?,?,?,?,?)",
-        [user.id, report.report_type, report.description, report.location, report.time_stamp]
+        "insert into community_report(user_id, report_type, description, location) values (?,?,?,?)",
+        [user.id, report.report_type, report.description, report.location]
     );
 
     if (results && results.affectedRows) {
-        return { ...user, id: results.insertId, password: undefined }; // return a copy of the user obj and override the id with the db id.
+        return { message :"report post successfuly"  , status: 200}; // return a copy of the user obj and override the id with the db id.
     } else {
         throw REPORT_CODES.REPORT_INSERT_FAILED;
     }
