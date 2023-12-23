@@ -2,9 +2,9 @@
 import { executeSql } from "../utils/database.utils.js";
 import { getUserByUsernameModel } from "./users.model.js";
 
-export const USER_CODES = {
-    USER_INSERT_FAILED: 'USER_INSERT_FAILED',
-    USER_TABLE_EMPTY: 'USER_TABLE_EMPTY',
+export const REPORT_CODES = {
+    REPORT_INSERT_FAILED: 'REPORT_INSERT_FAILED',
+    REPORT_TABLE_EMPTY: 'REPORT_TABLE_EMPTY',
     // USER_NOT_FOUND: 'USER_NOT_FOUND',
     // USER_UPDATE_FAILED: 'USER_UPDATE_FAILED',
 }
@@ -15,7 +15,7 @@ export const getAllReportsModel = async () => {
     if (results) {
         return { ...results };
     } else {
-        throw USER_CODES.USER_TABLE_EMPTY;
+        throw REPORT_CODES.REPORT_TABLE_EMPTY;
     }
 }
 
@@ -26,18 +26,23 @@ export const createReportModel = async (report) => {
     const user = await getUserByUsernameModel(payload);
     console.log("user in createReportModel"+user.result);
     const results = await executeSql(
-        "insert into community_report(user_id, report_type, description, location, time_stamp, image_link) values (?,?,?,?,?,?)",
-        [report.user_id, report.report_type, report.description, report.location, report.time_stamp, report.image_link]
+        "insert into community_report(user_id, report_type, description, location, time_stamp) values (?,?,?,?,?)",
+        [user.id, report.report_type, report.description, report.location, report.time_stamp]
     );
 
     if (results && results.affectedRows) {
         return { ...user, id: results.insertId, password: undefined }; // return a copy of the user obj and override the id with the db id.
     } else {
-        throw USER_CODES.USER_INSERT_FAILED;
+        throw REPORT_CODES.REPORT_INSERT_FAILED;
     }
 }
 
-
-// app.js
-
-
+export const getReportByTypeModel = async (payload) => {
+    const results = await executeSql("SELECT * FROM community_report WHERE report_type = ?",[payload.report_type]);
+    console.log(results);
+    if (results && results.length) {
+        return [ ...results ];
+    } else {
+        throw REPORT_CODES.REPORT_TABLE_EMPTY;
+    }
+}

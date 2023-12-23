@@ -1,7 +1,7 @@
-import {create, getWhere} from "./general.js";
-import {checkPasswordWithHash, generatePasswordHash,comparePassword} from "../utils/password.utils.js";
-import {generateToken} from "../utils/token.utils.js";
-import {getAllUsersModel, getUserByUsernameModel, createUserModel,updateUserModel,updateUserPassword, USER_CODES} from "../models/users.model.js";
+import { create, getWhere } from "./general.js";
+import { checkPasswordWithHash, generatePasswordHash, comparePassword } from "../utils/password.utils.js";
+import { generateToken } from "../utils/token.utils.js";
+import { getAllUsersModel, getUserByUsernameModel, createUserModel, updateUserModel, updateUserPassword, USER_CODES } from "../models/users.model.js";
 //import { comparePassword, generatePasswordHash } from "../utils/password.utils.js"; 
 
 export const getAllUsers = async (req, res, next) => {
@@ -121,6 +121,7 @@ export const deleteUser = async (req, res, next) => {
 export const loginUser = async (req, res, next) => {
     /*
      #swagger.security = []
+    
      */
     const username = req.body.username;
     const password = req.body.password;
@@ -155,7 +156,7 @@ export const changePassword = async (req, res, next) => {
         if (!user) {
             throw new Error('User not found');
         }
-        
+
         // Verify the old password
         console.log("password is :");
         console.log(user.password);
@@ -168,22 +169,22 @@ export const changePassword = async (req, res, next) => {
         // Generate a hash for the new password
         const newPasswordHash = await generatePasswordHash(payload.newPassword);
         // Update the user's password in the database
-        const updatedUser = await updateUserPassword(user.username, newPasswordHash);     
-        res.status(200).send({message : "password update successfuly"});
-      //  return updatedUser;
+        const updatedUser = await updateUserPassword(user.username, newPasswordHash);
+        res.status(200).send({ message: "password update successfuly" });
+        //  return updatedUser;
     } catch (error) {
-        switch(error) {
-                case USER_CODES.USER_PASSWORD_UPDATE_FAILD:
-                    res.status(400).send({
-                        message: 'password not updated ',
-                        status: 400,
-                    });
-                    break;
-                default:
-                    res.status(500).send({
-                        message: 'internal server error',
-                        status: 500
-                    });
-            } // Handle the error appropriately in your application
+        switch (error) {
+            case USER_CODES.USER_PASSWORD_UPDATE_FAILD:
+                res.status(400).send({
+                    message: 'password not updated ',
+                    status: 400,
+                });
+                break;
+            default:
+                res.status(500).send({
+                    message: 'internal server error',
+                    status: 500
+                });
+        } // Handle the error appropriately in your application
     }
 };
