@@ -5,6 +5,7 @@ export const USER_CODES = {
     USER_TABLE_EMPTY: 'USER_TABLE_EMPTY',
     USER_NOT_FOUND: 'USER_NOT_FOUND',
     USER_PASSWORD_UPDATE_FAILD: 'USER_PASSWORD_UPDATE_FAILD',
+    USER_SCORE_UPDATE_FAILED: 'USER_SCORE_UPDATE_FAILED',
 }
 
 export const getAllUsersModel = async () => {
@@ -77,6 +78,21 @@ export const updateUserModel = async (user) => {
     }
 }
 
+export const addScoreUserModel = async (user_id , username) => {
+    try {
+        const results = await executeSql("UPDATE users SET score = score + 1 WHERE id = ?" , [user_id]);
+
+        if (results && results.affectedRows) {
+            const user = await getUserByUsernameModel({username : username});
+            return user;
+        } else {
+            throw USER_CODES.USER_SCORE_UPDATE_FAILED;
+        }
+    } catch (error) {
+        console.error("Error updating user score: ", error);
+        throw USER_CODES.USER_SCORE_UPDATE_FAILED; 
+    }
+}
 
 export const updateUserPassword = async (username, newPasswordHash) => {
     const results = await executeSql(
