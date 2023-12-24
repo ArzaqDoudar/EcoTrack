@@ -34,7 +34,7 @@ app.use(
     expressjwt({
         secret: jwtPassword,
         algorithms: ["HS256"],
-        getToken: function fromHeaderOrQuerystring(req) {
+        getToken: (req) => {
             let token = null;
             if (
                 req.headers.authorization &&
@@ -46,6 +46,14 @@ app.use(
             }
             req.token = token;
             return token;
+        },
+        isRevoked: async (req, token) => {
+            const tokenExpiredTimeStamp = token.payload.exp;
+            const currentTimeStamp = Math.floor(Date.now() / 1000);
+            if (currentTimeStamp - tokenExpiredTimeStamp < 60) {
+                return false;
+            }
+            return true;
         },
     }).unless({
         path: [
