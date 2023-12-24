@@ -5,9 +5,9 @@ const router = express.Router();
 
 router.get('/' , getAllData);
 router.post('/' , insertData);
-router.post('/user/:username' , getUserData);
-router.post('/location' , getDataByLocation);
-router.post('/type' , getDataByType);
+router.get('/user/:username' , getUserData);
+router.get('/location/:location' , getDataByLocation);
+router.get('/type/:type' , getDataByType);
 
 
 

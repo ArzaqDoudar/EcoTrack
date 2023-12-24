@@ -18,15 +18,29 @@ export const getAllUsersModel = async () => {
     }
 }
 
-export const getUserByUsernameModel = async (user) => {
-    const result = await executeSql("SELECT * FROM users WHERE username = ?", [user.username]);
+// export const getUserByUsernameModel = async (user) => {
+//     const result = await executeSql("SELECT * FROM users WHERE username = ?", [user.username]);
 
-    if (result && result.length) {
-        return { ...result[0] };
-    } else {
-        throw USER_CODES.USER_NOT_FOUND;
+//     if (result && result.length) {
+//         return { ...result[0] };
+//     } else {
+//         throw USER_CODES.USER_NOT_FOUND;
+//     }
+// }
+export const getUserByUsernameModel = async (user) => {
+    try {
+        const result = await executeSql("SELECT * FROM users WHERE username = ?", [user.username]);
+
+        if (result && result.length) {
+            return { ...result[0] };
+        } else {
+            throw USER_CODES.USER_NOT_FOUND;
+        }
+    } catch (error) {
+        console.error("Error in getUserByUsernameModel:", error);
+        throw error; // Rethrow the error for further handling
     }
-}
+};
 
 export const createUserModel = async (user) => {
     const results = await executeSql(
@@ -78,21 +92,36 @@ export const updateUserModel = async (user) => {
     }
 }
 
-export const addScoreUserModel = async (user_id , username) => {
+// export const addScoreUserModel = async (user_id , username) => {
+//     try {
+//         const results = await executeSql("UPDATE users SET score = score + 1 WHERE id = ?" , [user_id]);
+
+//         if (results && results.affectedRows) {
+//             const user = await getUserByUsernameModel({username : username});
+//             return user;
+//         } else {
+//             throw USER_CODES.USER_SCORE_UPDATE_FAILED;
+//         }
+//     } catch (error) {
+//         console.error("Error updating user score: ", error);
+//         throw USER_CODES.USER_SCORE_UPDATE_FAILED; 
+//     }
+// }
+export const addScoreUserModel = async (user_id, username) => {
     try {
-        const results = await executeSql("UPDATE users SET score = score + 1 WHERE id = ?" , [user_id]);
+        const results = await executeSql("UPDATE users SET score = score + 1 WHERE id = ?", [user_id]);
 
         if (results && results.affectedRows) {
-            const user = await getUserByUsernameModel({username : username});
+            const user = await getUserByUsernameModel({ username: username });
             return user;
         } else {
             throw USER_CODES.USER_SCORE_UPDATE_FAILED;
         }
     } catch (error) {
-        console.error("Error updating user score: ", error);
-        throw USER_CODES.USER_SCORE_UPDATE_FAILED; 
+        console.error("Error in addScoreUserModel:", error);
+        throw error; // Rethrow the error for further handling
     }
-}
+};
 
 export const updateUserPassword = async (username, newPasswordHash) => {
     const results = await executeSql(

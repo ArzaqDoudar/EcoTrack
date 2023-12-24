@@ -53,7 +53,7 @@ export const getUserData = async (req, res, next) => {
     }
 };
 export const getDataByLocation = async (req, res, next) => {
-    const location = req.body.location;
+    const location = req.params.location;
     try {
         console.log("locatipn = " , location)
         const dataCollection = await getDataByLocationModel(location);
@@ -76,7 +76,7 @@ export const getDataByLocation = async (req, res, next) => {
     }
 };
 export const getDataByType = async (req, res, next) => {
-    const type = req.body.type;
+    const type = req.params.type;
     try {
         console.log("type = " , type)
         const dataCollection = await getDataByTypeModel(type);

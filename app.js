@@ -11,10 +11,7 @@ import DocsRouter from "./routes/docs.routes.js";
 import {expressjwt} from "express-jwt";
 import {jwtPassword} from './constants/login.constants.js';
 import { userMiddleware } from './middleware/user.middleware.js';
-
 const app = express();
-
-
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
@@ -105,6 +102,15 @@ app.use('/report', reportRouter
    
 );
 
+// app.use('/alert', reportRouter
+//     /*
+//         #swagger.security = [{
+//               "bearerAuth": []
+//         }]
+//         #swagger.tags = ['alert']
+//     */
+   
+// );
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
