@@ -1,11 +1,18 @@
-import { getAllDataModel, insertDataModel, getUserDataModel, getDataByLocationModel, DATA_CODES, getDataByTypeModel} from "../models/data.model.js";
+import { getAllDataModel, insertDataModel, getUserDataModel, getDataByLocationModel, DATA_CODES, getDataByTypeModel, deleteDataModel } from "../models/data.model.js";
 import { USER_CODES } from "../models/users.model.js";
 
 export const getAllData = async (req, res, next) => {
+    const role = req.user.user_role;
     try {
-        const dataCollection = await getAllDataModel();
-        console.log(dataCollection);
-        res.status(200).send(dataCollection);
+        if (role != "normal") {
+            const dataCollection = await getAllDataModel();
+            res.status(200).send(dataCollection);
+        }else{
+            res.status(400).send({
+                message: 'you have not access to see data collection',
+                status: 400,
+            });
+        }
     } catch (err) {
         switch (err) {
             case DATA_CODES.DATA_TABLE_EMPTY:
@@ -22,11 +29,11 @@ export const getAllData = async (req, res, next) => {
         }
     }
 };
+
 export const getUserData = async (req, res, next) => {
     const username = req.params.username;
     try {
         const dataCollection = await getUserDataModel(username);
-        console.log(dataCollection);
         res.status(200).send(dataCollection);
     } catch (err) {
         switch (err) {
@@ -37,7 +44,7 @@ export const getUserData = async (req, res, next) => {
                     status: 400,
                 });
                 break;
-             case USER_CODES.USER_NOT_FOUND:
+            case USER_CODES.USER_NOT_FOUND:
                 res.status(400).send({
                     user: username,
                     message: 'this user dose not exist',
@@ -52,12 +59,11 @@ export const getUserData = async (req, res, next) => {
         }
     }
 };
+
 export const getDataByLocation = async (req, res, next) => {
     const location = req.params.location;
     try {
-        console.log("locatipn = " , location)
         const dataCollection = await getDataByLocationModel(location);
-        console.log(dataCollection);
         res.status(200).send(dataCollection);
     } catch (err) {
         switch (err) {
@@ -75,12 +81,11 @@ export const getDataByLocation = async (req, res, next) => {
         }
     }
 };
+
 export const getDataByType = async (req, res, next) => {
     const type = req.params.type;
     try {
-        console.log("type = " , type)
         const dataCollection = await getDataByTypeModel(type);
-        // console.log(dataCollection);
         res.status(200).send(dataCollection);
     } catch (err) {
         switch (err) {
@@ -98,6 +103,7 @@ export const getDataByType = async (req, res, next) => {
         }
     }
 };
+
 export const insertData = async (req, res, next) => {
     const payload = {
         username: req.user.username,
@@ -107,7 +113,6 @@ export const insertData = async (req, res, next) => {
     };
     try {
         const result = await insertDataModel(payload);
-        console.log(result);
         res.status(200).send(result);
     } catch (err) {
         switch (err) {
@@ -137,4 +142,33 @@ export const insertData = async (req, res, next) => {
         }
     }
 
+};
+
+export const deleteData = async (req, res, next) => {
+    const id = req.params.id
+    console.log("data id = " , id)
+    try {
+        const result = await deleteDataModel(id);
+        res.status(200).send(result);
+    } catch (err) {
+        switch (err) {
+            case DATA_CODES.DATA_NOT_EXIST:
+                res.status(400).send({
+                    message: 'there is no data in this sys with this id',
+                    status: 400,
+                });
+                break;
+            case DATA_CODES.DATA_DELETE_FAILD:
+                res.status(400).send({
+                    message: 'data delete faild',
+                    status: 400,
+                });
+                break;
+            default:
+                res.status(500).send({
+                    message: 'internal server error',
+                    status: 500
+                });
+        }
+    }
 };
