@@ -3,6 +3,6 @@ import { forcast } from "../controllers/weatherapi.controller.js";
 
 const router = express.Router();
 
-router.get('/' , forcast);
+router.get('/:location/:time' , forcast);
 
 export default router;

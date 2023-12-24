@@ -1,11 +1,15 @@
 import axios from "axios";
 export const forcast = async (req, res, next) => {
+  const location = req.params.location;
+  const timesteps = req.params.time;
   const options = {
     method: "GET",
     url: "https://tomorrow-io1.p.rapidapi.com/v4/weather/forecast",
     params: {
-      location: "42.15, 82,1",
-      timesteps: "1h",
+      // location: "32.223330,35.234320",
+      // location: "42.15, 82,1",
+      location: location,
+      timesteps: timesteps,
       units: "metric",
     },
     headers: {
@@ -20,7 +24,6 @@ export const forcast = async (req, res, next) => {
       data: response.data,
     });
   } catch (error) {
-    // console.log("hala");
     console.error(error);
   }
 };
