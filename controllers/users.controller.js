@@ -1,8 +1,6 @@
-import { create, getWhere } from "./general.js";
 import { checkPasswordWithHash, generatePasswordHash, comparePassword } from "../utils/password.utils.js";
 import { generateToken } from "../utils/token.utils.js";
 import { getAllUsersModel, getUserByUsernameModel, createUserModel, updateUserModel, updateUserPassword, USER_CODES } from "../models/users.model.js";
-//import { comparePassword, generatePasswordHash } from "../utils/password.utils.js"; 
 
 export const getAllUsers = async (req, res, next) => {
     try {
@@ -62,6 +60,7 @@ export const insertUser = async (req, res, next) => {
         username: req.body.username,
         password: await generatePasswordHash(req.body.password),
         location: req.body.location,
+        role: req.body.role,
     };
     try {
         const user = await createUserModel(payload);
@@ -72,6 +71,12 @@ export const insertUser = async (req, res, next) => {
             case USER_CODES.USER_INSERT_FAILED:
                 res.status(400).send({
                     message: 'insert failed',
+                    status: 400,
+                });
+                break;
+            case USER_CODES.USER_DATA_NOT_CORRECT:
+                res.status(400).send({
+                    message: 'all feilds must have data',
                     status: 400,
                 });
                 break;
@@ -89,8 +94,8 @@ export const updateUser = async (req, res, next) => {
         username: req.user.username,
         name: req.body.name,
         location: req.body.location,
+        role: req.body.role,
     };
-    // res.send({message: "update user" , user: payload});
     try {
         console.log(payload);
         const user = await updateUserModel(payload);
@@ -125,11 +130,7 @@ export const loginUser = async (req, res, next) => {
      */
     const username = req.body.username;
     const password = req.body.password;
-    let user = (await getWhere('users', {
-        columns: '*', // 'id , username , location , name',
-        where: 'username',
-        whereValue: username,
-    }))[0];
+    let user = await getUserByUsernameModel({ username: username })
     if (user && await checkPasswordWithHash(password, user.password)) {
         let token = await generateToken(user);
         console.log("token", token);
@@ -140,9 +141,6 @@ export const loginUser = async (req, res, next) => {
         res.status(400).send({ error: 'incorrect credential' });
     }
 };
-
-
-// Replace with your actual password hashing library
 
 export const changePassword = async (req, res, next) => {
     const payload = {
