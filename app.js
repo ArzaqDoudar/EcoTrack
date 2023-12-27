@@ -12,9 +12,17 @@ import DocsRouter from "./routes/docs.routes.js";
 import {expressjwt} from "express-jwt";
 import {jwtPassword} from './constants/login.constants.js';
 import { userMiddleware } from './middleware/user.middleware.js';
-
+// import admin from "firebase-admin";
+import {initializeApp , applicationDefault} from "firebase-admin/app";
+import { firebaseConfig } from './config.js';
 const app = express();
 
+process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+initializeApp({
+    credential:applicationDefault(),
+    projectId: "ecotrack-fdd1f",
+});
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
@@ -64,7 +72,7 @@ app.use(
             }, {
                 method: "POST",
                 url: '/users/'
-            }
+            },
         ]
     })
 );
@@ -72,6 +80,16 @@ app.use(
 app.use(userMiddleware);
 
 app.use('/', indexRouter);
+
+app.use('/users', usersRouter
+    /*
+        #swagger.security = [{
+              "bearerAuth": []
+        }]
+        #swagger.tags = ['Users']
+    */
+);
+
 app.use('/data-collection', dataRouter
     /*
         #swagger.security = [{
@@ -86,14 +104,6 @@ app.use('/concerns', concernsRouter
               "bearerAuth": []
         }]
         #swagger.tags = ['Concerns']
-    */
-);
-app.use('/users', usersRouter
-    /*
-        #swagger.security = [{
-              "bearerAuth": []
-        }]
-        #swagger.tags = ['Users']
     */
 );
 app.use('/educational-resources', educationalRouter

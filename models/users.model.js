@@ -1,4 +1,5 @@
 import { executeSql } from "../utils/database.utils.js";
+import { CONCERNS_CODES, getConcernModel, insertConcernModel } from "./concerns.models.js";
 
 export const USER_CODES = {
     USER_INSERT_FAILED: 'USER_INSERT_FAILED',
@@ -8,6 +9,8 @@ export const USER_CODES = {
     USER_PASSWORD_UPDATE_FAILD: 'USER_PASSWORD_UPDATE_FAILD',
     USER_SCORE_UPDATE_FAILED: 'USER_SCORE_UPDATE_FAILED',
     USER_DATA_NOT_CORRECT: 'USER_DATA_NOT_CORRECT',
+    USER_CONCERN_INSERT_FAILD: 'USER_CONCERN_INSERT_FAILD',
+    NO_USER_CONCERNS: 'NO_USER_CONCERNS',
 }
 
 export const getAllUsersModel = async () => {
@@ -30,7 +33,7 @@ export const getUserByUsernameModel = async (user) => {
 }
 
 export const createUserModel = async (user) => {
-    if (user.name != "any" && user.username != "any" && user.password != "any" && user.location != "any"&& user.role != "any") {
+    if (user.name != "any" && user.username != "any" && user.password != "any" && user.location != "any" && user.role != "any") {
         const results = await executeSql(
             "insert into users(name, username, password, location , user_role) values (?,?,?,?,?)",
             [user.name, user.username, user.password, user.location, user.role]
@@ -40,7 +43,7 @@ export const createUserModel = async (user) => {
         } else {
             throw USER_CODES.USER_INSERT_FAILED;
         }
-    }else {
+    } else {
         throw USER_CODES.USER_DATA_NOT_CORRECT;
     }
 
@@ -117,3 +120,92 @@ export const updateUserPassword = async (username, newPasswordHash) => {
     }
 };
 
+
+export const addUserConsernModel = async (user_id, concern_name) => {
+    try {
+        const ckeckExist = await getConcernModel(concern_name);
+        console.log("ckeckExist , ", ckeckExist);
+        if (ckeckExist) { // not exist, so, create new one 
+            const result = await executeSql("INSERT INTO `user_concerns` (`user_id` , `concerns_id`) VALUES (?,?)", [user_id, ckeckExist.id]);
+            if (result && result.affectedRows) {
+                return {
+                    message: "add exist consern for the user",
+                    status: 200
+                }
+            } else {
+                throw USER_CODES.USER_CONCERN_INSERT_FAILD;
+            }
+        } else {
+            throw CONCERNS_CODES.CONCERNS_NOT_EXIST;
+        }
+
+
+
+    } catch (error) {
+        switch (error) {
+            case CONCERNS_CODES.CONCERNS_DELETE_FAILD:
+                throw CONCERNS_CODES.CONCERNS_DELETE_FAILD;
+            case CONCERNS_CODES.CONCERNS_NOT_EXIST:
+                const resultInsert = await insertConcernModel(concern_name);
+                const newConcern = await getConcernModel(concern_name);
+                const result = await executeSql("INSERT INTO `user_concerns` (`user_id` , `concerns_id`) VALUES (?,?)", [user_id, newConcern.id]);
+                if (result && result.affectedRows) {
+                    return {
+                        message: "add new consern for this user",
+                        status: 200
+                    }
+                } else {
+                    // throw USER_CODES.USER_CONCERN_INSERT_FAILD;
+                }
+
+                break;
+            default:
+                console.log(error);
+                console.log("CONCERNS_CODES.CONCERNS_NOT_EXIST");
+                throw error
+        }
+    }
+};
+
+export const getAllUserConcernsModel = async (user_id) => {
+
+    try {
+        const user_concerns = await executeSql("SELECT *  FROM user_concerns WHERE user_id = ? ", [user_id]);
+        if (user_concerns && user_concerns.length) {
+
+            console.log("user_id === ", user_concerns)
+            let allConcerns = [];
+            let concernsPromises = [];
+            for (const concern of user_concerns) {
+
+                console.log("user_concerns === ", concern)
+                console.log("user_concerns id === ", concern.id)
+                concernsPromises.push(executeSql("SELECT * FROM concerns WHERE id = ? ", [concern.id]));
+            }
+            let promise = new Promise((resolve, reject) => {
+                Promise.all(concernsPromises).then((userconcernsResponse) => {
+                    for (const concern of userconcernsResponse) {
+                        if (concern && concern.length) {
+
+                            console.log("user_id === ", concern[0])
+                            allConcerns.push(concern[0]);
+                        }
+                    }
+                    resolve(allConcerns);
+                }).catch((err) => {
+                    reject(err);
+                });
+            });
+            return promise;
+        } else {
+            throw USER_CODES.NO_USER_CONCERNS;
+        }
+    } catch (error) {
+        switch (error) {
+            case USER_CODES.NO_USER_CONCERNS:
+                throw USER_CODES.NO_USER_CONCERNS;
+            default:
+                throw error
+        }
+    }
+}
