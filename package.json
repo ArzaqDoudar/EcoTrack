@@ -30,5 +30,13 @@
   "devDependencies": {
     "nodemon": "^3.0.2",
     "swagger-autogen": "^2.23.7"
-  }
+  },
+  "main": "app.js",
+  "bin": {
+    "ecotrack": "bin/www.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

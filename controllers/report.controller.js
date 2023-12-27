@@ -2,6 +2,7 @@ import {
   getAllReportsModel,
   createReportModel,
   getReportByTypeModel,
+  getReportByUsernameModel,
   REPORT_CODES
 } from "../models/report.model.js";
 import { uploadImage } from "./uploadimageapi.controller.js";
@@ -81,7 +82,7 @@ export const insertReport = async (req, res, next) => {
 
 export const getReportsByType = async (req, res, next) => {
     const payload = {
-        report_type: req.body.report_type,
+        report_type: req.params.report_type,
       };
   try {
     const reports = await getReportByTypeModel(payload);
@@ -102,4 +103,28 @@ export const getReportsByType = async (req, res, next) => {
         });
     }
   }
+};
+
+
+export const getUserReports = async (req, res, next) => {
+  const username = req.params.username;
+try {
+  const reports = await getReportByUsernameModel(username);
+  console.log(reports);
+  res.status(200).send(reports);
+} catch (err) {
+  switch (err) {
+    case REPORT_CODES.REPORT_TABLE_EMPTY:
+      res.status(400).send({
+        message: "there is no reports with this username",
+        status: 400,
+      });
+      break;
+    default:
+      res.status(500).send({
+        message: "internal server error",
+        status: 500,
+      });
+  }
+}
 };
