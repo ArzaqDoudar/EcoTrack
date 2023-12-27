@@ -4,6 +4,7 @@ import { getAllUsersModel, getUserByUsernameModel, createUserModel, updateUserMo
 import { getConcernModel, CONCERNS_CODES, insertConcernModel } from "../models/concerns.models.js";
 import { getMessaging } from "firebase-admin/messaging"
 import { response } from "express";
+// import getToken from "firebase-messaging";
 
 export const getAllUsers = async (req, res, next) => {
     try {
@@ -188,4 +189,84 @@ export const changePassword = async (req, res, next) => {
                 });
         } // Handle the error appropriately in your application
     }
+};
+
+export const addUserConsern = async (req, res, next) => {
+    const concern_name = req.body.concern_name;
+    const user_id = req.user.id;
+    try {
+        const result = await addUserConsernModel(user_id , concern_name);
+        res.status(200).send(result);
+       
+    } catch (error) {
+        switch (error) {
+            case CONCERNS_CODES.CONCERNS_DELETE_FAILD:
+                throw CONCERNS_CODES.CONCERNS_DELETE_FAILD;
+            case CONCERNS_CODES.CONCERNS_NOT_EXIST:
+                
+            throw CONCERNS_CODES.CONCERNS_NOT_EXIST;
+            default:
+                throw error
+        }
+    }
+};
+
+
+export const getAllUserConcerns = async (req, res, next) => {
+    const user_id = req.user.id;
+    console.log("user_id === " , user_id)
+    try {
+        const concerns = await getAllUserConcernsModel(user_id);
+        console.log(concerns);
+        res.status(200).send({user : req.user,concerns :concerns});
+    } catch (err) {
+        switch (err) {
+             case USER_CODES.NO_USER_CONCERNS:
+                res.status(400).send({
+                    message: 'there is no concerns for this user',
+                    status: 400,
+                });
+                break;
+            default:
+                res.status(500).send({
+                    message: 'internal server error',
+                    status: 500
+                });
+        }
+    }
+};
+
+export const alert = async (req, res, next) => {
+    /*
+    #swagger.security = []
+   
+    */
+    res.send({ message: "message sent" });
+    // const receivedToken = req.body.fcmToken;
+    // console.log("msg = ", receivedToken);
+
+    // // const messaging = firebase.messaging();
+    // getToken().then((token) => {
+    //     console.log(token);
+    // }).catch((error) => {
+    //     console.error('Error getting FCM registration token:', error);
+    // });
+
+    // const message = {
+    //     notification: {
+    //         title: "notif",
+    //         body: " This is a test notififcation"
+    //     },
+    //     token: ""
+    // }
+
+    // getMessaging().send(message).then((response) => {
+    //     res.status(200).json({
+    //         message: "Successfully sent notification",
+    //         token: receivedToken,
+    //     });
+    // }).catch((error) => {
+    //     console.log("error while sending the notification");
+    //     res.status(400).send(error);
+    // })
 };
