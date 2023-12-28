@@ -19,3 +19,42 @@ VALUES
   (2, 'Noise', 'Loud construction noise near the park', 'Park Area', '2023-01-03T09:00:00'),
   (2, 'Garbage', 'Overflowing trash bins in the neighborhood', 'Residential Area', '2023-01-06T11:00:00'),
   (2, 'Street Lighting Issue', 'Street lights not working on Elm Street', 'Elm Street', '2023-01-08T19:15:00');
+
+INSERT INTO `data` (`user_id`, `data_type`, `value`, `location`)
+VALUES
+  (2, 'air quality', '25', '32.203950,35.299910'),
+  (2, 'temperature', '30', '32.223330,35.234320'),
+  (2, 'humidity', '50', '32.223330,35.234320'),
+  (2, 'water quality', 'Good', '32.223330,35.234320'),
+  (2, 'biodiversity', 'High', '32.203950,35.299910'),
+  (6, 'air quality', '18', '32.203950,35.299910'),
+  (6, 'temperature', '28', '32.203950,35.299910'),
+  (6, 'humidity', '45', '32.223330,35.234320'),
+  (6, 'water quality', 'Moderate', '32.223330,35.234320'),
+  (6, 'biodiversity', 'Medium', '32.223330,35.234320');
+
+INSERT INTO `concerns` (`name`) 
+VALUES
+  ('Air Pollution'),
+  ('Water Contamination'),
+  ('Deforestation'),
+  ('Climate Change'),
+  ('Endangered Species'),
+  ('Waste Management'),
+  ('Ocean Pollution'),
+  ('Soil Erosion'),
+  ('Noise Pollution'),
+  ('Loss of Biodiversity'),
+  ('Habitat Destruction'),
+  ('Overfishing'),
+  ('Resource Depletion'),
+  ('Industrial Pollution'),
+  ('Chemical Spills'),
+  ('Urbanization Impact'),
+  ('Plastic Pollution'),
+  ('Renewable Energy Transition'),
+  ('Land Degradation'),
+  ('Pesticide Usage'),
+  ('Genetically Modified Organisms (GMOs)'),
+  ('Nuclear Waste Disposal'),
+  ('Wildlife Trafficking');

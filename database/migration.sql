@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS `community_report`;
-DROP TABLE IF EXISTS `sustainability_score`;
 DROP TABLE IF EXISTS `data`;
 DROP TABLE IF EXISTS `user_concerns`;
 DROP TABLE IF EXISTS `concerns`;
@@ -12,6 +11,7 @@ CREATE TABLE `users` (
   `password` varchar(64) NOT NULL ,
   `location` varchar(1024) DEFAULT NULL,
   `score` int NOT NULL DEFAULT 0,
+  `user_role` varchar(32) NOT NULL DEFAULT "normal",
   PRIMARY KEY (`Id`),
   UNIQUE KEY `UserName_UNIQUE` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -41,15 +41,6 @@ CREATE TABLE `data` (
   `value` varchar(45) DEFAULT NULL,
   `location` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `sustainability_score` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int DEFAULT NULL,
-  `score` int DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `sustainability_score_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `community_report` (

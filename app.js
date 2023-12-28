@@ -3,6 +3,8 @@ import axios from 'axios';
 import createError from "http-errors";
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.routes.js";
+import concernsRouter from "./routes/concerns.routers.js";
+import interestsRouter from "./routes/interests.routes.js";
 import dataRouter from "./routes/data.routes.js";
 import educationalRouter from "./routes/educationalresources.routes.js";
 import weatherRouter from "./routes/weather.routes.js";
@@ -11,7 +13,10 @@ import DocsRouter from "./routes/docs.routes.js";
 import {expressjwt} from "express-jwt";
 import {jwtPassword} from './constants/login.constants.js';
 import { userMiddleware } from './middleware/user.middleware.js';
+
 const app = express();
+
+
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
@@ -31,7 +36,7 @@ app.use(
     expressjwt({
         secret: jwtPassword,
         algorithms: ["HS256"],
-        getToken: function fromHeaderOrQuerystring(req) {
+        getToken: (req) => {
             let token = null;
             if (
                 req.headers.authorization &&
@@ -44,6 +49,14 @@ app.use(
             req.token = token;
             return token;
         },
+        isRevoked: async (req, token) => {
+            const tokenExpiredTimeStamp = token.payload.exp;
+            const currentTimeStamp = Math.floor(Date.now() / 1000);
+            if (currentTimeStamp - tokenExpiredTimeStamp < 60) {
+                return false;
+            }
+            return true;
+        },
     }).unless({
         path: [
             {
@@ -52,7 +65,7 @@ app.use(
             }, {
                 method: "POST",
                 url: '/users/'
-            }
+            },
         ]
     })
 );
@@ -60,14 +73,7 @@ app.use(
 app.use(userMiddleware);
 
 app.use('/', indexRouter);
-app.use('/data-collection', dataRouter
-    /*
-        #swagger.security = [{
-              "bearerAuth": []
-        }]
-        #swagger.tags = ['DataCollection']
-    */
-);
+
 app.use('/users', usersRouter
     /*
         #swagger.security = [{
@@ -76,6 +82,32 @@ app.use('/users', usersRouter
         #swagger.tags = ['Users']
     */
 );
+
+app.use('/data-collection', dataRouter
+    /*
+        #swagger.security = [{
+              "bearerAuth": []
+        }]
+        #swagger.tags = ['DataCollection']
+    */
+);
+app.use('/concerns', concernsRouter
+    /*
+        #swagger.security = [{
+              "bearerAuth": []
+        }]
+        #swagger.tags = ['Concerns']
+    */
+);
+app.use('/interests', interestsRouter
+    /*
+        #swagger.security = [{
+              "bearerAuth": []
+        }]
+        #swagger.tags = ['Interests']
+    */
+);
+
 app.use('/educational-resources', educationalRouter
     /*
         #swagger.security = [{

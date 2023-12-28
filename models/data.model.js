@@ -4,10 +4,12 @@ import { USER_CODES, addScoreUserModel, getUserByUsernameModel } from "./users.m
 export const DATA_CODES = {
     DATA_TABLE_EMPTY: 'DATA_TABLE_EMPTY',
     DATA_INSERT_FAILD: 'DATA_INSERT_FAILD',
+    DATA_DELETE_FAILD: 'DATA_DELETE_FAILD',
     DATA_NOT_CORRECT: 'DATA_NOT_CORRECT',
     DATA_USER_EMPTY: 'DATA_USER_EMPTY',
     DATA_LOCATION_EMPTY: 'DATA_LOCATION_EMPTY',
     DATA_TYPE_EMPTY: 'DATA_TYPE_EMPTY',
+    DATA_NOT_EXIST: 'DATA_NOT_EXIST',
 }
 
 export const getAllDataModel = async () => {
@@ -18,6 +20,7 @@ export const getAllDataModel = async () => {
         throw DATA_CODES.DATA_TABLE_EMPTY;
     }
 }
+
 export const insertDataModel = async (data) => {
     try {
         console.log("inside insert data model")
@@ -95,10 +98,45 @@ export const getDataByLocationModel = async (location) => {
 
 export const getDataByTypeModel = async (data_type) => {
     const results = await executeSql("SELECT *  FROM data WHERE data_type = ?", [data_type]);
-    console.log("SELECT *  FROM data WHERE data_type = '?'", data_type);
     if (results && results.length) {
         return [...results];
     } else {
         throw DATA_CODES.DATA_TYPE_EMPTY;
+    }
+}
+
+export const getDataByIdModel = async (id) => {
+    const results = await executeSql("SELECT *  FROM data WHERE id = ?", [id]);
+    if (results && results.length) {
+        return {...results[0]};
+    } else {
+        throw DATA_CODES.DATA_NOT_EXIST;
+    }
+}
+
+
+
+
+export const deleteDataModel = async (id) => {
+    try {
+        const ckeckExist = await getDataByIdModel(id);
+        if (!ckeckExist) {
+            throw DATA_CODES.DATA_NOT_EXIST;
+        }
+        const result = await executeSql("DELETE FROM data WHERE id = ? ", [id]);
+        if (result && result.affectedRows) {
+            return { message: "data deleted successfuly", status: 200 };
+        } else {
+            throw DATA_CODES.DATA_DELETE_FAILD;
+        }
+    } catch (error) {
+        switch (error) {
+            case DATA_CODES.DATA_DELETE_FAILD:
+                throw DATA_CODES.DATA_DELETE_FAILD;
+            case DATA_CODES.DATA_NOT_EXIST:
+                throw DATA_CODES.DATA_NOT_EXIST;
+                default : 
+                throw error
+        }
     }
 }
