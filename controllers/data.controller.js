@@ -1,5 +1,7 @@
 import { getAllDataModel, insertDataModel, getUserDataModel, getDataByLocationModel, DATA_CODES, getDataByTypeModel, deleteDataModel } from "../models/data.model.js";
+import { getUsersByInterestModel } from "../models/interests.models.js";
 import { USER_CODES } from "../models/users.model.js";
+import { sendMessageToSimilarUsers } from "./alert.controller.js";
 
 export const getAllData = async (req, res, next) => {
     const role = req.user.user_role;
@@ -112,6 +114,12 @@ export const insertData = async (req, res, next) => {
         location: req.body.location,
     };
     try {
+        const similarUsers = await getUsersByInterestModel("rain");
+        if (similarUsers.length > 0) {
+            // Send a message to similar users
+            const message = `${req.user.username} has inserted new data related to your interests!`;
+            await sendMessageToSimilarUsers(similarUsers, message);
+        }
         const result = await insertDataModel(payload);
         res.status(200).send(result);
     } catch (err) {
