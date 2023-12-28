@@ -236,6 +236,49 @@ export const getAllUserConcerns = async (req, res, next) => {
     }
 };
 
+export const addUserInterest = async (req, res, next) => {
+    const interest_name = req.body.interest_name;
+    const user_id = req.user.id;
+    try {
+        const result = await addUserInterestModel(user_id, interest_name);
+        res.status(200).send(result);
+    } catch (error) {
+        switch (error) {
+            case INTERESTS_CODES.INTEREST_DELETE_FAILED:
+                throw INTERESTS_CODES.INTEREST_DELETE_FAILED;
+            case INTERESTS_CODES.INTEREST_NOT_EXIST:
+                throw INTERESTS_CODES.INTEREST_NOT_EXIST;
+            default:
+                throw error;
+        }
+    }
+};
+
+export const getAllUserInterests = async (req, res, next) => {
+    const user_id = req.user.id;
+    console.log("user_id === ", user_id);
+    try {
+        const interests = await getAllUserInterestsModel(user_id);
+        console.log(interests);
+        res.status(200).send({ user: req.user, interests: interests });
+    } catch (err) {
+        switch (err) {
+            case USER_CODES.NO_USER_INTERESTS:
+                res.status(400).send({
+                    message: 'There are no interests for this user',
+                    status: 400,
+                });
+                break;
+            default:
+                res.status(500).send({
+                    message: 'Internal server error',
+                    status: 500,
+                });
+        }
+    }
+};
+
+
 export const alert = async (req, res, next) => {
     /*
     #swagger.security = []

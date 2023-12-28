@@ -1,5 +1,6 @@
 import { executeSql } from "../utils/database.utils.js";
 import { CONCERNS_CODES, getConcernModel, insertConcernModel } from "./concerns.models.js";
+import { getInterestModel, insertInterestModel } from "./interests.models.js";
 
 export const USER_CODES = {
     USER_INSERT_FAILED: 'USER_INSERT_FAILED',
@@ -11,6 +12,10 @@ export const USER_CODES = {
     USER_DATA_NOT_CORRECT: 'USER_DATA_NOT_CORRECT',
     USER_CONCERN_INSERT_FAILD: 'USER_CONCERN_INSERT_FAILD',
     NO_USER_CONCERNS: 'NO_USER_CONCERNS',
+    INTEREST_NOT_EXIST: 'INTEREST_NOT_EXIST',
+    INTEREST_DELETE_FAILED: 'INTEREST_DELETE_FAILED',
+    NO_USER_INTERESTS: 'NO_USER_INTERESTS',
+    USER_INTEREST_INSERT_FAILED: 'USER_INTEREST_INSERT_FAILED',
 }
 
 export const getAllUsersModel = async () => {
@@ -223,3 +228,86 @@ export const getAllUserConcernsModel = async (user_id) => {
         }
     }
 }
+
+
+export const addUserInterestModel = async (user_id, interest_name) => {
+    try {
+        const checkExist = await getInterestModel(interest_name);
+
+        if (checkExist) {
+            const result = await executeSql("INSERT INTO `user_interests` (`user_id`, `interest_id`) VALUES (?, ?)", [user_id, checkExist.interest_id]);
+
+            if (result && result.affectedRows) {
+                return {
+                    message: "Added existing interest for the user",
+                    status: 200
+                };
+            } else {
+                throw USER_CODES.USER_INTEREST_INSERT_FAILED;
+            }
+        } else {
+            throw INTERESTS_CODES.INTEREST_NOT_EXIST;
+        }
+    } catch (error) {
+        switch (error) {
+            case INTERESTS_CODES.INTEREST_DELETE_FAILED:
+                throw INTERESTS_CODES.INTEREST_DELETE_FAILED;
+            case INTERESTS_CODES.INTEREST_NOT_EXIST:
+                const resultInsert = await insertInterestModel(interest_name);
+                const newInterest = await getInterestModel(interest_name);
+                const result = await executeSql("INSERT INTO `user_interests` (`user_id`, `interest_id`) VALUES (?, ?)", [user_id, newInterest.interest_id]);
+
+                if (result && result.affectedRows) {
+                    return {
+                        message: "Added new interest for the user",
+                        status: 200
+                    };
+                } else {
+                    // throw USER_CODES.USER_INTEREST_INSERT_FAILED;
+                }
+                break;
+            default:
+                console.log(error);
+                console.log("INTERESTS_CODES.INTEREST_NOT_EXIST");
+                throw error;
+        }
+    }
+};
+
+export const getAllUserInterestsModel = async (user_id) => {
+    try {
+        const user_interests = await executeSql("SELECT * FROM user_interests WHERE user_id = ?", [user_id]);
+
+        if (user_interests && user_interests.length) {
+            let allInterests = [];
+            let interestsPromises = [];
+
+            for (const interest of user_interests) {
+                interestsPromises.push(executeSql("SELECT * FROM interests WHERE interest_id = ?", [interest.interest_id]));
+            }
+
+            let promise = new Promise((resolve, reject) => {
+                Promise.all(interestsPromises).then((userInterestsResponse) => {
+                    for (const interest of userInterestsResponse) {
+                        if (interest && interest.length) {
+                            allInterests.push(interest[0]);
+                        }
+                    }
+                    resolve(allInterests);
+                }).catch((err) => {
+                    reject(err);
+                });
+            });
+            return promise;
+        } else {
+            throw USER_CODES.NO_USER_INTERESTS;
+        }
+    } catch (error) {
+        switch (error) {
+            case USER_CODES.NO_USER_INTERESTS:
+                throw USER_CODES.NO_USER_INTERESTS;
+            default:
+                throw error;
+        }
+    }
+};

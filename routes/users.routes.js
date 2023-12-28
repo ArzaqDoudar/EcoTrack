@@ -1,6 +1,5 @@
 import express from "express";
-import { getAllUsers, loginUser , insertUser , getUserByUsername , updateUser ,deleteUser ,changePassword,getAllUserConcerns, addUserConsern , alert} from "../controllers/users.controller.js";
-import { getAllConcerns } from "../controllers/concerns.controller.js";
+import { getAllUsers, loginUser , insertUser , getUserByUsername , updateUser ,deleteUser ,changePassword,getAllUserConcerns, addUserConsern , alert, getAllUserInterests, addUserInterest} from "../controllers/users.controller.js";
 
 const router = express.Router();
 
@@ -13,6 +12,8 @@ router.put('/' , updateUser);
 router.put('/changepassword' , changePassword);
 router.get('/concern' , getAllUserConcerns);
 router.post('/concern' , addUserConsern);
+router.get('/intrest' , getAllUserInterests);
+router.post('/intrest' , addUserInterest);
 router.post('/alert' , alert);
 
 export default router;
