@@ -34,6 +34,12 @@ Plus, working on different parts of the project simultaneously is smooth, foster
 * <strong>GET: /concerns/users/{concern-name} </strong> get all users that have same concern [concern-name].
 * <strong>DELETE: /concerns/{name} </strong> delete concern with this name [name].
 
+### Intrests API:
+* <strong>GET: /intrests </strong> get all interests in the system.
+* <strong>POST: /intrests </strong> add new interest [interest-name].
+* <strong>PUT: /intrests </strong> edit interest name [old-name, new-name].
+* <strong>GET: /intrests/users/{intrest-name} </strong> Get all users that have the same interest [interset-name].
+* <strong>DELETE: /intrests/{name} </strong> delete interest with this name [name].
 
 ### Educational Resources API:
 * <strong>GET: /educational-resources/</strong> - to get all educational resources in the system, so the user can see them [no parameter].
