@@ -18,6 +18,8 @@ Plus, working on different parts of the project simultaneously is smooth, foster
 * <strong>PUT: /users/changepassword </strong> - to change user password [password, newpassword].
 * <strong>GET: /users/concern </strong> return the user with his concerns [no parameter].
 * <strong>POST: /users/concern </strong> add the concern to the user who loged in, if this concern not exist in the concerns tabel this api create new one then added it to user concern.
+* <strong>GET: /users/intrest </strong> return the user with his intrest [no parameter].
+* <strong>POST: /users/interst </strong> add the interest to the user who loged in, if this interest not exist in the concerns tabel this api create new one then added it to user interest.
 
 ### Data Collection API:
 * <strong>GET: /data-collection </strong> to get all data collected in the  system, this API allowed for the users who are not normal users (like researchers, scientists, and organizations) [no parameter].
